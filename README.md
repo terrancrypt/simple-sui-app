@@ -1,11 +1,11 @@
-# Sui NFT Collection App
+# Sui Memory NFT Collection App
 
-Ứng dụng mint NFT trên Sui blockchain với 2 loại NFT: Random Memory NFT và Self Introduction NFT.
+Ứng dụng quản lý Memory NFT Collection trên Sui blockchain với 2 chức năng chính: Add Memory Template và Mint Random NFT.
 
 ## 🚀 Demo
 
-- **Random Memory NFT**: Mint NFT ngẫu nhiên từ templates có sẵn
-- **Self Introduction NFT**: Tạo NFT với thông tin tùy chỉnh
+- **Add Memory Template**: Thêm memory templates vào collection để mọi người có thể mint
+- **Random Memory NFT**: Mint NFT ngẫu nhiên từ templates có sẵn trong collection
 - **Real-time Transaction**: Hiển thị kết quả transaction ngay lập tức
 - **Wallet Integration**: Tích hợp với Sui wallet
 
@@ -498,14 +498,44 @@ Truy cập `http://localhost:5173` để xem ứng dụng.
 
 ### Smart Contract Details
 
-- **Package ID**: `0x489563cb7a99e87528b871f6f5df62100e96374d7cfc9432af7907f119049151`
-- **MemoryTemplateStore**: `0x0b8391f4a847b3c9b1ec9a4820939906c8520714dcf5f1b4b503f8ab3c33f4c0`
+- **Package ID**: `0xe463bad101ad1d0b2f7d048a5cf7b946d73f9b831c4dbe90465ad9921f8a5374`
+- **MemoryTemplateStore**: `0xa4741e999ca62a46e260aed19f7571f87a3207acca23f510e719c78681547a88`
 - **Network**: Sui Testnet
 
 ### Functions
 
-1. **`mint_random_memory_nft`**: Mint NFT ngẫu nhiên từ templates
-2. **`mint_self_introduction_nft`**: Mint NFT với thông tin tùy chỉnh
+1. **`add_memory_template`**: Thêm memory template vào MemoryTemplateStore
+   - Arguments: store_id, title, description, image_url, rarity (1-10)
+2. **`mint_random_memory_nft`**: Mint NFT ngẫu nhiên từ templates có sẵn
+   - Arguments: store_id
+
+## 🎯 App Flow
+
+### Workflow hiện tại:
+
+1. **Add Template Phase**:
+   - User sử dụng "Add Memory Template" component
+   - Nhập: name, description, image URL, rarity (1-5)
+   - Template được lưu vào MemoryTemplateStore
+
+2. **Mint NFT Phase**:
+   - User sử dụng "Random Memory NFT" component
+   - Có thể add thêm templates hoặc mint ngay từ templates có sẵn
+   - NFT được mint ngẫu nhiên từ pool templates
+
+### Component Architecture:
+
+#### AddMemoryTemplate Component (formerly SelfIntroductionNFT):
+- **Chức năng**: Chỉ add memory template vào MemoryTemplateStore
+- **Input**: name, description, imageUrl, rarity (1-5)
+- **Output**: Template được lưu trong collection
+
+#### RandomMemoryNFT Component:
+- **Chức năng**: Quản lý templates và mint random NFT
+- **Features**:
+  - Template management section (add/view templates)
+  - Mint random NFT from available templates
+  - Separation of concerns: add ≠ mint
 
 ## 🎯 Features
 

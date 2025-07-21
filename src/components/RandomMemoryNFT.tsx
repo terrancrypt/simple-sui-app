@@ -3,6 +3,7 @@ import {
   useSignAndExecuteTransaction,
 } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
+import { useState } from "react";
 
 interface RandomMemoryNFTProps {
   isLoading: boolean;
@@ -18,6 +19,64 @@ export function RandomMemoryNFT({
 }: RandomMemoryNFTProps) {
   const account = useCurrentAccount();
   const signAndExecuteTransaction = useSignAndExecuteTransaction();
+  const [showTemplateForm, setShowTemplateForm] = useState(false);
+  const [templateForm, setTemplateForm] = useState({
+    title: "",
+    description: "",
+    imageUrl: "",
+    rarity: 1,
+  });
+
+  async function handleAddTemplate() {
+    if (!account) return;
+    
+    if (!templateForm.title || !templateForm.description || !templateForm.imageUrl) {
+      alert("Please fill in all template fields");
+      return;
+    }
+
+    setIsLoading(true);
+    setMintResult(null);
+
+    const tx = new Transaction();
+    const packageObjectId =
+      "0xe463bad101ad1d0b2f7d048a5cf7b946d73f9b831c4dbe90465ad9921f8a5374";
+    const memoryTemplateStoreId =
+      "0xa4741e999ca62a46e260aed19f7571f87a3207acca23f510e719c78681547a88";
+
+    tx.moveCall({
+      target: `${packageObjectId}::my_nft_collection::add_memory_template`,
+      arguments: [
+        tx.object(memoryTemplateStoreId),
+        tx.pure.string(templateForm.title),
+        tx.pure.string(templateForm.description), 
+        tx.pure.string(templateForm.imageUrl),
+        tx.pure.u8(templateForm.rarity),
+      ],
+    });
+
+    try {
+      const resData = await signAndExecuteTransaction.mutateAsync({
+        transaction: tx,
+      });
+      console.log("Template added successfully!", resData);
+      setMintResult(resData);
+      
+      // Reset form
+      setTemplateForm({
+        title: "",
+        description: "",
+        imageUrl: "",
+        rarity: 1,
+      });
+      setShowTemplateForm(false);
+    } catch (e) {
+      console.error("Template add failed", e);
+      setMintResult({ error: e });
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   async function handleMintRandomMemoryNFT() {
     if (!account) return;
@@ -27,13 +86,13 @@ export function RandomMemoryNFT({
 
     // define a programmable transaction
     const tx = new Transaction();
+    // Dùng contract MỚI và MemoryTemplateStore tương ứng
     const packageObjectId =
-      "0x489563cb7a99e87528b871f6f5df62100e96374d7cfc9432af7907f119049151";
+      "0xe463bad101ad1d0b2f7d048a5cf7b946d73f9b831c4dbe90465ad9921f8a5374";
 
-    // MemoryTemplateStore object ID trên testnet
-    // Đây là shared object được tạo khi khởi tạo contract
+    // MemoryTemplateStore object ID từ contract mới
     const memoryTemplateStoreId =
-      "0x0b8391f4a847b3c9b1ec9a4820939906c8520714dcf5f1b4b503f8ab3c33f4c0";
+      "0xa4741e999ca62a46e260aed19f7571f87a3207acca23f510e719c78681547a88";
 
     tx.moveCall({
       target: `${packageObjectId}::my_nft_collection::mint_random_memory_nft`,
