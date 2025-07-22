@@ -38,34 +38,27 @@ pnpm install
 pnpm add @mysten/sui @mysten/dapp-kit @tanstack/react-query
 
 # Cài đặt Tailwind CSS
-pnpm add -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
+pnpm add tailwindcss @tailwindcss/vite
 ```
 
 ### Bước 3: Cấu hình Tailwind CSS
 
-Tạo file `tailwind.config.js`:
+Tạo file `tailwind.config.ts`:
 
-```javascript
-/** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+```typescript
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+export default defineConfig({
+  plugins: [
+    tailwindcss(),
   ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
+})
 ```
 
 Cập nhật `src/index.css`:
 
 ```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 ```
 
 ### Bước 4: Cấu hình Main App
